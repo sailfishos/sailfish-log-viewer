@@ -3,7 +3,7 @@ CONFIG += static
 TARGET = logger
 QT += dbus gui
 CONFIG += sailfishapp link_pkgconfig
-PKGCONFIG += mlite5 gio-2.0 gio-unix-2.0 glib-2.0
+PKGCONFIG += mlite5 libglibutil gio-2.0 gio-unix-2.0 glib-2.0
 
 WARNINGS = -Wall -Wno-unused-parameter -Wno-deprecated-declarations
 EXTRA_CFLAGS = $$WARNINGS -fvisibility=hidden
@@ -13,8 +13,6 @@ QMAKE_CFLAGS += $$EXTRA_CFLAGS
 HARBOUR_LIB_DIR = $$_PRO_FILE_PWD_/../harbour-lib
 HARBOUR_LIB_SRC = $${HARBOUR_LIB_DIR}/src
 HARBOUR_LIB_INCLUDE = $${HARBOUR_LIB_DIR}/include
-
-LIBGLIBUTIL = src/libglibutil
 
 LIBDBUSLOG = src/libdbuslog
 LIBDBUSLOG_COMMON = $${LIBDBUSLOG}/common
@@ -89,8 +87,7 @@ INCLUDEPATH += \
     include \
     $${HARBOUR_LIB_INCLUDE} \
     $${LIBDBUSLOG_COMMON_INCLUDE} \
-    $${LIBDBUSLOG_CLIENT_INCLUDE} \
-    $${LIBGLIBUTIL}/include
+    $${LIBDBUSLOG_CLIENT_INCLUDE}
 
 OTHER_FILES += \
     qml/pages/*.js \

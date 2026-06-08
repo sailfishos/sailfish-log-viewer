@@ -1,8 +1,8 @@
 openrepos {
     PREFIX = openrepos-logger
-    DEFINES += OPENREPOS
 } else {
-    PREFIX = harbour-logger
+    PREFIX = sailfish-log-viewer
+    DEFINES += SAILFISH_LOG_VIEWER
 }
 
 NAME = nfc
@@ -18,7 +18,7 @@ app_settings {
 }
 
 CONFIG += sailfishapp link_pkgconfig
-PKGCONFIG += sailfishapp mlite5 gio-2.0 gio-unix-2.0 glib-2.0
+PKGCONFIG += sailfishapp libglibutil mlite5 gio-2.0 gio-unix-2.0 glib-2.0
 QT += dbus
 
 DEFINES += APP_PREFIX=$${PREFIX}
@@ -46,15 +46,13 @@ LOGGER_LIB_DIR = $$_PRO_FILE_PWD_/../logger
 LOGGER_LIB = $$OUT_PWD/../logger/liblogger.a
 
 PRE_TARGETDEPS += \
-    $$LOGGER_LIB \
-    $$HARBOUR_LIB
+    $$LOGGER_LIB
 
 LIBS += \
-    $$LOGGER_LIB \
-    $$HARBOUR_LIB
+    $$LOGGER_LIB
 
 OTHER_FILES += \
-    icons/harbour-$${NAME}.svg \
+    icons/sailfish-log-viewer-$${NAME}.svg \
     *.desktop \
     qml/*.qml \
     privileges/* \
@@ -75,20 +73,6 @@ INCLUDEPATH += \
 SOURCES += \
     src/main.cpp
 
-# libglibutil
-
-LIBGLIBUTIL = $${LOGGER_LIB_DIR}/src/libglibutil
-LIBGLIBUTIL_SRC = $${LIBGLIBUTIL}/src
-
-INCLUDEPATH += \
-    $${LIBGLIBUTIL}/include
-
-SOURCES += \
-    $${LIBGLIBUTIL_SRC}/gutil_log.c \
-    $${LIBGLIBUTIL_SRC}/gutil_misc.c \
-    $${LIBGLIBUTIL_SRC}/gutil_ring.c \
-    $${LIBGLIBUTIL_SRC}/gutil_strv.c
-
 # harbour-lib QML components
 
 HARBOUR_LIB_QML = $${HARBOUR_LIB_DIR}/qml
@@ -105,7 +89,7 @@ INSTALLS += qml_components
 app_settings {
     settings_json.files = $${LOGGER_LIB_DIR}/settings/$${TARGET}.json
     settings_json.path = /usr/share/jolla-settings/entries/
-    settings_json.extra = sed s/harbour-logger/$${TARGET}/g $${LOGGER_LIB_DIR}/settings/harbour-logger.json > $$eval(settings_json.files)
+    settings_json.extra = sed s/sailfish-log-viewer/$${TARGET}/g $${LOGGER_LIB_DIR}/settings/sailfish-log-viewer.json > $$eval(settings_json.files)
     settings_json.CONFIG += no_check_exist
     settings_qml.files = $${LOGGER_LIB_DIR}/settings/settings.qml
     settings_qml.path = /usr/share/$${TARGET}/settings/
@@ -127,7 +111,7 @@ for(s, ICON_SIZES) {
         $${icon_target}.CONFIG += no_check_exist
         $${icon_target}.files = $${OUT_PWD}/$${icon_dir}/$${TARGET}.png
         $${icon_target}.extra = mkdir -p \"$${OUT_PWD}/$${icon_dir}\" && \
-            cp \"$${_PRO_FILE_PWD_}/$${icon_dir}/harbour-logger-$${NAME}.png\" \"$${OUT_PWD}/$${icon_dir}/$${TARGET}.png\"
+            cp \"$${_PRO_FILE_PWD_}/$${icon_dir}/sailfish-log-viewer-$${NAME}.png\" \"$${OUT_PWD}/$${icon_dir}/$${TARGET}.png\"
     } else {
         $${icon_target}.files = $${icon_dir}/$${TARGET}.png
     }
@@ -149,7 +133,7 @@ TRANSLATION_FILES = \
 
 for(t, TRANSLATION_FILES) {
     suffix = $$replace(t,-,_)
-    in = $${_PRO_FILE_PWD_}/translations/harbour-logger-$${t}
+    in = $${_PRO_FILE_PWD_}/translations/sailfish-log-viewer-$${t}
     out = $${OUT_PWD}/translations/$${PREFIX}-$${t}
 
     lupdate_target = lupdate_$$suffix

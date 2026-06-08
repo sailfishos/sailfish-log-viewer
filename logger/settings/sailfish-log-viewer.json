@@ -1,0 +1,14 @@
+{
+    "translation_catalog" : "sailfish-log-viewer",
+    "entries": [
+        {
+            "path": "applications/sailfish-log-viewer.desktop",
+            "title": "Logger",
+            "type": "page",
+            "icon": "sailfish-log-viewer",
+            "params": {
+                "source": "/usr/share/sailfish-log-viewer/settings/settings.qml"
+            }
+        }
+    ]
+}
