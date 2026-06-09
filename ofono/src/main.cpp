@@ -1,33 +1,40 @@
 /*
+ * Copyright (C) 2016-2026 Slava Monich <slava@monich.com>
  * Copyright (C) 2016-2022 Jolla Ltd.
- * Copyright (C) 2016-2022 Slava Monich <slava.monich@jolla.com>
  *
- * You may use this file under the terms of BSD license as follows:
+ * You may use this file under the terms of the BSD license as follows:
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
  *
- *   1. Redistributions of source code must retain the above copyright
- *      notice, this list of conditions and the following disclaimer.
- *   2. Redistributions in binary form must reproduce the above copyright
- *      notice, this list of conditions and the following disclaimer in the
- *      documentation and/or other materials provided with the distribution.
- *   3. Neither the names of the copyright holders nor the names of its
- *      contributors may be used to endorse or promote products derived
- *      from this software without specific prior written permission.
+ *  1. Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- * THE POSSIBILITY OF SUCH DAMAGE.
+ *  2. Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer
+ *     in the documentation and/or other materials provided with the
+ *     distribution.
+ *
+ *  3. Neither the names of the copyright holders nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation
+ * are those of the authors and should not be interpreted as representing
+ * any official policies, either expressed or implied.
  */
 
 #include "LoggerMain.h"
@@ -38,15 +45,13 @@
 
 #include <sailfishapp.h>
 
-#include <QQuickView>
-#include <QQmlContext>
+#include <QtQuick/QQuickView>
+#include <QtQml/QQmlContext>
 
 #define OFONO_INTERFACE "org.ofono"
 #define OFONOEXT_INTERFACE "org.nemomobile.ofono"
 #define MODEM_MANAGER_INTERFACE OFONOEXT_INTERFACE ".ModemManager"
 #define CELLULAR_TECHNOLOGY_PATH "/net/connman/technology/cellular"
-
-#define SUPER LoggerMain
 
 #ifdef APP_TRANSLATIONS_PATH
 #  define APP_TRANS_DIR QT_STRINGIFY(APP_TRANSLATIONS_PATH)
@@ -59,10 +64,11 @@
 #  define APP_NAME_PREFIX QT_STRINGIFY(APP_PREFIX)
 #  pragma message("App prefix: " APP_NAME_PREFIX)
 #else
-#  define APP_NAME_PREFIX "harbour-logger"
+#  define APP_NAME_PREFIX "sailfish-log-viewer"
 #endif
 
-class OfonoLogger: public SUPER
+class OfonoLogger :
+    public LoggerMain
 {
     Q_OBJECT
     Q_PROPERTY(bool mobileDataBroken READ mobileDataBroken NOTIFY mobileDataBrokenChanged)
@@ -71,7 +77,7 @@ class OfonoLogger: public SUPER
     static const QString AUTO;
 
 public:
-    OfonoLogger(int* aArgc, char** aArgv, QStringList aPackages);
+    OfonoLogger(int*, char**, QStringList);
     bool mobileDataBroken() const;
     bool mobileDataDisabled() const;
     Q_INVOKABLE void fixMobileData();
@@ -80,12 +86,12 @@ public:
 private:
     void maybeSaveFiles();
     void saveFiles() const;
-    void dumpOfonoInfo(QString aPath, QString aService) const;
-    void dumpConnmanInfo(QString aPath, QString aService) const;
+    void dumpOfonoInfo(QString, QString) const;
+    void dumpConnmanInfo(QString, QString) const;
 
 protected:
-    void saveFilesAtStartup(QString aDir) Q_DECL_OVERRIDE;
-    void setupView(QQuickView* aView) Q_DECL_OVERRIDE;
+    void saveFilesAtStartup(QString) Q_DECL_OVERRIDE;
+    void setupView(QQuickView*) Q_DECL_OVERRIDE;
 
 private Q_SLOTS:
     void updateModemManagerState();
@@ -110,10 +116,11 @@ private:
 const QString OfonoLogger::AUTO("auto");
 
 OfonoLogger::OfonoLogger(int* aArgc, char** aArgv, QStringList aPackages) :
-    SUPER(aArgc, aArgv, "org.ofono", aPackages, APP_NAME_PREFIX, "ofono",
+    LoggerMain(aArgc, aArgv, "org.ofono", aPackages, APP_NAME_PREFIX, "ofono",
     "qml/main.qml", APP_TRANS_DIR),
     iModemManager(QOfonoExtModemManager::instance()),
     iNetworkTechnology(new NetworkTechnology(this)),
+    iNetworkTechnologyReady(false),
     iFilesSaved(false),
     iMobileDataBroken(false),
     iMobileDataDisabled(false)
@@ -134,29 +141,36 @@ OfonoLogger::OfonoLogger(int* aArgc, char** aArgv, QStringList aPackages) :
     updateModemManagerState();
 }
 
-inline bool OfonoLogger::mobileDataBroken() const
+inline
+bool
+OfonoLogger::mobileDataBroken() const
 {
     return iMobileDataBroken;
 }
 
-inline bool OfonoLogger::mobileDataDisabled() const
+inline
+bool
+OfonoLogger::mobileDataDisabled() const
 {
     return iMobileDataDisabled;
 }
 
-void OfonoLogger::fixMobileData()
+void
+OfonoLogger::fixMobileData()
 {
     HDEBUG("ok");
     iModemManager->setDefaultDataSim(AUTO);
 }
 
-void OfonoLogger::enableMobileData()
+void
+OfonoLogger::enableMobileData()
 {
     HDEBUG("ok");
     iNetworkTechnology->setPowered(true);
 }
 
-void OfonoLogger::updateModemManagerState()
+void
+OfonoLogger::updateModemManagerState()
 {
     maybeSaveFiles();
     // On a single-SIM phone default data sim should be always set to "auto"
@@ -171,7 +185,8 @@ void OfonoLogger::updateModemManagerState()
     }
 }
 
-void OfonoLogger::updateNetworkTechnologyState()
+void
+OfonoLogger::updateNetworkTechnologyState()
 {
     if (iNetworkTechnologyReady) {
         const bool wasDisabled = iMobileDataDisabled;
@@ -183,14 +198,16 @@ void OfonoLogger::updateNetworkTechnologyState()
     }
 }
 
-void OfonoLogger::onNetworkTechnologyReady()
+void
+OfonoLogger::onNetworkTechnologyReady()
 {
     HDEBUG("NetworkTechnology ready");
     iNetworkTechnologyReady = true;
     updateNetworkTechnologyState();
 }
 
-void OfonoLogger::maybeSaveFiles()
+void
+OfonoLogger::maybeSaveFiles()
 {
     if (!iFilesSaved && !iSaveDir.isEmpty() && iModemManager->valid()) {
         iFilesSaved = true;
@@ -198,9 +215,11 @@ void OfonoLogger::maybeSaveFiles()
     }
 }
 
-void OfonoLogger::saveFiles() const
+void
+OfonoLogger::saveFiles() const
 {
     QString rilerror("/var/lib/ofono/rilerror");
+
     if (QFile::exists(rilerror)) {
         QFile::copy(rilerror, iSaveDir + "/rilerror");
     }
@@ -227,21 +246,29 @@ void OfonoLogger::saveFiles() const
     }
 }
 
-void OfonoLogger::dumpOfonoInfo(QString aPath, QString aCall) const
+void
+OfonoLogger::dumpOfonoInfo(
+    QString aPath,
+    QString aCall) const
 {
     QString suffix = QString(aPath).replace("/", "");
     QString dest = QString("--dest=%1").arg(iService);
     QString call = QString(OFONO_INTERFACE ".%1").arg(aCall);
+
     saveOutput("dbus-send", "--system", "--print-reply", "--type=method_call",
         qPrintable(dest),  qPrintable(aPath), qPrintable(call),
         iSaveDir + "/" + aCall + "." + suffix + ".txt");
 }
 
-void OfonoLogger::dumpConnmanInfo(QString aPath, QString aCall) const
+void
+OfonoLogger::dumpConnmanInfo(
+    QString aPath,
+    QString aCall) const
 {
     QString call = QString("net.connman.%1").arg(aCall);
     QString outFile = iSaveDir + "/connman." + aCall;
     const int lastSlash = aPath.lastIndexOf('/');
+
     if (lastSlash > 0 && (lastSlash + 1) < aPath.length()) {
         outFile += ".";
         outFile += aPath.right(aPath.length() - lastSlash - 1);
@@ -251,23 +278,28 @@ void OfonoLogger::dumpConnmanInfo(QString aPath, QString aCall) const
         "--dest=net.connman",  qPrintable(aPath), qPrintable(call), outFile);
 }
 
-void OfonoLogger::saveFilesAtStartup(QString aDir)
+void
+OfonoLogger::saveFilesAtStartup(
+    QString aDir)
 {
     iSaveDir = aDir;
     dumpConnmanInfo("/net/connman/technology/cellular",
         "Technology.GetProperties");
     maybeSaveFiles();
-    SUPER::saveFilesAtStartup(aDir);
+    LoggerMain::saveFilesAtStartup(aDir);
 }
 
-void OfonoLogger::setupView(QQuickView* aView)
+void
+OfonoLogger::setupView(
+    QQuickView* aView)
 {
     QQmlContext* context = aView->rootContext();
+
     //: Settings page title (app name)
     //% "Ofono Log"
     aView->setTitle(qtTrId("openrepos-logger-ofono-app_name"));
     context->setContextProperty("OfonoLogger", this);
-    SUPER::setupView(aView);
+    LoggerMain::setupView(aView);
 }
 
 Q_DECL_EXPORT int main(int argc, char* argv[])
@@ -278,6 +310,7 @@ Q_DECL_EXPORT int main(int argc, char* argv[])
     packages.append("libglibutil");
     packages.append("libgrilio");
     packages.append("libgrilio-binder");
+    packages.append("libqofonoext");
     packages.append("ofono");
     packages.append("ofono-binder-plugin");
     packages.append("ofono-ril-plugin");

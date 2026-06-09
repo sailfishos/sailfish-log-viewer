@@ -3,7 +3,7 @@ Summary:    Log viewer tools
 Version:    1.0.22
 Release:    1
 License:    BSD
-URL:        http://sailfishos.org/sailfish-log-viewer
+URL:        https://github.com/sailfishos/sailfish-log-viewer
 Source0:    %{name}-%{version}.tar.bz2
 
 Requires:   sailfishsilica-qt5
@@ -21,6 +21,10 @@ BuildRequires: pkgconfig(libglibutil)
 BuildRequires: desktop-file-utils
 BuildRequires: qt5-qttools-linguist
 
+# license macro requires rpm >= 4.11
+BuildRequires: pkgconfig(rpm)
+%define license_support %(pkg-config --exists 'rpm >= 4.11'; echo $?)
+
 %description
 Application for gathering ofono logs on Sailfish OS
 
@@ -30,10 +34,8 @@ Summary:    Ofono logger
 %description ofono
 %{summary}.
 
-%{!?qtc_qmake:%define qtc_qmake %qmake}
 %{!?qtc_qmake5:%define qtc_qmake5 %qmake5}
 %{!?qtc_make:%define qtc_make make}
-%{?qtc_builddir:%define _builddir %qtc_builddir}
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -62,3 +64,6 @@ desktop-file-install --delete-original \
 %{_bindir}/sailfish-log-viewer-ofono
 %{_datadir}/icons/hicolor/*/apps/sailfish-log-viewer-ofono.png
 %{privileges_dir}/sailfish-log-viewer-ofono
+%if %{license_support} == 0
+%license LICENSE
+%endif
