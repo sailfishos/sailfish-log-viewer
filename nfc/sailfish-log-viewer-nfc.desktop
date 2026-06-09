@@ -1,12 +1,12 @@
 [Desktop Entry]
 Type=Application
-Name=Ofono Log
+Name=NFC Log
 X-Nemo-Application-Type=silica-qt5
-Icon=openrepos-logger-ofono
-Exec=openrepos-logger-ofono
+Icon=sailfish-log-viewer-nfc
+Exec=sailfish-log-viewer-nfc
 
 [X-HarbourBackup]
-BackupConfigList=/apps/openrepos-logger-ofono/
+BackupConfigList=/apps/sailfish-log-viewer-nfc/
 
 [X-Sailjail]
 Sandboxing=Disabled
