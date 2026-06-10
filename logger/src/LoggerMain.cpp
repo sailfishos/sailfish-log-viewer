@@ -52,8 +52,7 @@
 #include "HarbourTransferMethodsModel.h"
 
 #include <sailfishapp.h>
-#include <QFile>
-#include <QGuiApplication>
+#include <QtCore/QFile>
 #include <QtQuick>
 #include <QtQml>
 
@@ -66,26 +65,25 @@
 #undef signals
 #include "dbuslog_client.h"
 
-static void register_types(const char* uri, int v1 = 1, int v2 = 0)
-{
-    qmlRegisterType<LoggerHints>(uri, v1, v2, "LoggerHints");
-}
-
-LoggerMain::LoggerMain(int* aArgc, char** aArgv, const char* aService,
-    QStringList aRpmPackages, QString aAppPrefix, QString aAppSuffix,
-    QString aQmlPath, QString aTransDir) :
-    iApp(SailfishApp::application(*aArgc, aArgv)),
+LoggerMain::LoggerMain(
+    int* aArgc,
+    char** aArgv,
+    const char* aService,
+    QStringList aRpmPackages,
+    QString aAppPrefix,
+    QString aAppSuffix,
+    QString aQmlPath) :
     iService(aService),
     iRpmPackages(aRpmPackages),
     iFullAppName(aAppPrefix + QString("-") + aAppSuffix),
     iAppSuffix(aAppSuffix),
     iQmlPath(aQmlPath),
-    iTransDir(aTransDir),
+    iApp(SailfishApp::application(*aArgc, aArgv)),
     iClient(dbus_log_client_new(G_BUS_TYPE_SYSTEM, aService, "/",
         DBUSLOG_CLIENT_FLAG_AUTOSTART))
 {
-    QString pluginPrefix(QString("harbour.logger.") + aAppSuffix);
-    register_types(qPrintable(pluginPrefix));
+    QByteArray plugin((QString("harbour.logger.") + aAppSuffix).toLatin1());
+    qmlRegisterType<LoggerHints>(plugin.constData(), 1, 0, "LoggerHints");
     HarbourTransferMethodInfo2::registerTypes();
 }
 
@@ -95,35 +93,18 @@ LoggerMain::~LoggerMain()
     delete iApp;
 }
 
-void LoggerMain::loadTranslations()
-{
-    QLocale locale;
-    QTranslator* translator = new QTranslator(iApp);
-    if (translator->load(locale, iFullAppName, "-", iTransDir) ||
-        translator->load(iFullAppName, iTransDir)) {
-        iApp->installTranslator(translator);
-    } else {
-        HWARN("Failed to load" << qPrintable(iFullAppName) << "translations for" << locale);
-        HDEBUG("Translation directory" << iTransDir);
-        HDEBUG("App name" << iFullAppName);
-        delete translator;
-    }
-
-    translator = new QTranslator(iApp);
-    if (HarbourTransferMethodsModel::loadTranslations(translator, locale) ||
-        HarbourTransferMethodsModel::loadTranslations(translator, QLocale("en_GB"))) {
-        iApp->installTranslator(translator);
-    } else {
-        delete translator;
-    }
-}
-
-bool LoggerMain::saveOutput(const char* aExe, const char* const aArgv[],
-    QString aOut) const
+/* static */
+bool
+LoggerMain::saveOutput(
+    const char* aExe,
+    const char* const aArgv[],
+    QString aOut)
 {
     int fd = open(qPrintable(aOut), O_WRONLY | O_CREAT, 0644);
+
     if (fd >= 0) {
         pid_t pid = fork();
+
         if (!pid) {
             dup2(fd, STDOUT_FILENO);
             dup2(fd, STDERR_FILENO);
@@ -139,15 +120,25 @@ bool LoggerMain::saveOutput(const char* aExe, const char* const aArgv[],
     }
 }
 
-bool LoggerMain::saveOutput(const char* const aArgv[], QString aOut) const
+/* static */
+bool
+LoggerMain::saveOutput(
+    const char* const aArgv[],
+    QString aOut)
 {
     return saveOutput(aArgv[0], aArgv, aOut);
 }
 
-bool LoggerMain::saveOutput(const char* aExe, const char* aArg1,
-    const char* aArg2, QString aOut) const
+/* static */
+bool
+LoggerMain::saveOutput(
+    const char* aExe,
+    const char* aArg1,
+    const char* aArg2,
+    QString aOut)
 {
     const char* argv[4];
+
     argv[0] = aExe;
     argv[1] = aArg1;
     argv[2] = aArg2;
@@ -155,11 +146,20 @@ bool LoggerMain::saveOutput(const char* aExe, const char* aArg1,
     return saveOutput(aExe, argv, aOut);
 }
 
-bool LoggerMain::saveOutput(const char* aExe, const char* aArg1,
-    const char* aArg2, const char* aArg3, const char* aArg4,
-    const char* aArg5, const char* aArg6, QString aOut) const
+/* static */
+bool
+LoggerMain::saveOutput(
+    const char* aExe,
+    const char* aArg1,
+    const char* aArg2,
+    const char* aArg3,
+    const char* aArg4,
+    const char* aArg5,
+    const char* aArg6,
+    QString aOut)
 {
     const char* argv[8];
+
     argv[0] = aExe;
     argv[1] = aArg1;
     argv[2] = aArg2;
@@ -171,6 +171,12 @@ bool LoggerMain::saveOutput(const char* aExe, const char* aArg1,
     return saveOutput(aExe, argv, aOut);
 }
 
+QString
+LoggerMain::translationPath()
+{
+    return SailfishApp::pathTo("translations").toLocalFile();
+}
+
 void LoggerMain::saveFilesAtStartup(QString aDir)
 {
     // Copy OS and hardware versions
@@ -179,9 +185,11 @@ void LoggerMain::saveFilesAtStartup(QString aDir)
 
     // And the package version(s)
     const int n = iRpmPackages.count();
+
     if (n > 0) {
         QByteArray printablePackages[n];
         const char* args[n + 3];
+
         args[0] = "rpm";
         args[1] = "-q";
         for (int i = 0; i < n; i++) {
@@ -193,13 +201,36 @@ void LoggerMain::saveFilesAtStartup(QString aDir)
     }
 }
 
-void LoggerMain::setupView(QQuickView* aView)
-{
-}
+void
+LoggerMain::setupView(
+    QQuickView* aView)
+{}
 
-int LoggerMain::run()
+int
+LoggerMain::run()
 {
-    loadTranslations();
+    // Translations
+    QLocale locale;
+    QTranslator* translator = new QTranslator(iApp);
+    const QString transDir(translationPath());
+
+    if (translator->load(locale, iFullAppName, "-", transDir) ||
+        translator->load(iFullAppName, transDir)) {
+        iApp->installTranslator(translator);
+    } else {
+        HWARN("Failed to load" << qPrintable(iFullAppName) << "translations for" << locale);
+        HDEBUG("Translation directory" << transDir);
+        HDEBUG("App name" << iFullAppName);
+        delete translator;
+    }
+
+    translator = new QTranslator(iApp);
+    if (HarbourTransferMethodsModel::loadTranslations(translator, locale) ||
+        HarbourTransferMethodsModel::loadTranslations(translator, QLocale("en_GB"))) {
+        iApp->installTranslator(translator);
+    } else {
+        delete translator;
+    }
 
     // Signal handler
     HarbourSigChildHandler* sigChild = HarbourSigChildHandler::install(iApp);
