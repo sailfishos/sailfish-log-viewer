@@ -81,13 +81,14 @@ public:
     QMutex iMutex;
     LoggerBuffer iBuffer;
     QThreadPool* iThreadPool;
-    QString iArchivePath;
-    QString iArchiveType;
-    QString iArchiveName;
-    QString iArchiveFile;
     QTemporaryDir iTempDir;
-    QString iRootDir;
+    const QString iArchiveType;
+    const QString iArchiveName;
+    const QString iArchiveFile;
+    const QString iRootDir;
     QFile iLogFile;
+    const QString iArchivePath;
+    guint iArchiveSize;
     SaveTask* iSaveTask;
     int iPid;
 };
@@ -175,12 +176,14 @@ LoggerLogSaver::Private::Private(
     iWriteTaskRunning(false),
     iBuffer(-1),
     iThreadPool(new QThreadPool(this)),
+    iTempDir(aTmpDir + QDir::separator() + aName + "_XXXXXX"),
     iArchiveType("application/x-gzip"),
     iArchiveName(aName + QDateTime::currentDateTime().toString("_yyyy-MM-dd_hhmmss")),
     iArchiveFile(iArchiveName + ".tar.gz"),
-    iTempDir(aTmpDir + QDir::separator() + aName + "_XXXXXX"),
-    iRootDir(iTempDir.path() + "/" + iArchiveName),
-    iLogFile(iRootDir + "/" + aName + ".log"),
+    iRootDir(iTempDir.path() + QDir::separator() + iArchiveName),
+    iLogFile(iRootDir + QDir::separator() + aName + ".log"),
+    iArchivePath(iTempDir.path() + QDir::separator() + iArchiveFile),
+    iArchiveSize(0),
     iSaveTask(Q_NULLPTR),
     iPid(0)
 {
@@ -199,7 +202,7 @@ LoggerLogSaver::Private::~Private()
 {
     iThreadPool->waitForDone();
     HASSERT(!iWriteTaskRunning);
-    if (!iArchivePath.isEmpty()) unlink(qPrintable(iArchivePath));
+    QFile::remove(iArchivePath);
 }
 
 inline
@@ -262,8 +265,8 @@ LoggerLogSaver::Private::doWrite()
 void
 LoggerLogSaver::Private::pack()
 {
-    iArchivePath = iTempDir.path() + "/" + iArchiveFile;
-    HDEBUG("Creating" << iArchivePath);
+    QFile::remove(iArchivePath);
+    HDEBUG("Creating" << qPrintable(iArchivePath));
     if (iPid > 0) kill(iPid, SIGKILL);
     if (!(iPid = fork())) {
         // Child
@@ -306,7 +309,6 @@ LoggerLogSaver::Private::onSaveTaskDone(
         Q_EMIT saver->savingChanged();
     }
 }
-
 
 // ==========================================================================
 // LoggerLogSaver
@@ -357,6 +359,18 @@ LoggerLogSaver::archiveType() const
     return iPrivate->iArchiveType;
 }
 
+qint64
+LoggerLogSaver::archiveSize() const
+{
+    return iPrivate->iArchiveSize;
+}
+
+QUrl
+LoggerLogSaver::archiveUrl() const
+{
+    return QUrl::fromLocalFile(iPrivate->iArchivePath);
+}
+
 void
 LoggerLogSaver::pack()
 {
@@ -376,18 +390,25 @@ LoggerLogSaver::onProcessDied(
 {
     if (iPrivate->iPid > 0 && iPrivate->iPid == aPid) {
         const QByteArray tarball(iPrivate->iArchivePath.toLocal8Bit());
+        const qint64 size = QFileInfo(iPrivate->iArchivePath).size();
 
-        HDEBUG("Tar done, pid" << aPid << "status" << aStatus);
+        HDEBUG("Tar done, pid" << aPid << "status" <<
+            aStatus << "size" << size);
         if (chown(tarball.constData(), getuid(), getgid()) < 0) {
             HWARN("Failed to chown" << tarball.constData() << ":"
                 << strerror(errno));
         }
         iPrivate->iPid = -1;
+        if (iPrivate->iArchiveSize != size) {
+            iPrivate->iArchiveSize = size;
+            Q_EMIT archiveSizeChanged();
+        }
         Q_EMIT packingChanged();
     }
 }
 
-void LoggerLogSaver::save()
+void
+LoggerLogSaver::save()
 {
     if (iPrivate->save()) {
         Q_EMIT savingChanged();

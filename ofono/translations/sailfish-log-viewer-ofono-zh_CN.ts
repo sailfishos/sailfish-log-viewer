@@ -111,6 +111,30 @@
         <source>Pack and send</source>
         <translation>打包并发送</translation>
     </message>
+    <message id="logger-sharepage-la-file_size-bytes">
+        <source>%1 B</source>
+        <translation>%1 B</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-kilobytes">
+        <source>%1 kB</source>
+        <translation>%1 kB</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-megabytes">
+        <source>%1 MB</source>
+        <translation>%1 MB</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-gigabytes">
+        <source>%1 GB</source>
+        <translation>%1 GB</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-terabytes">
+        <source>%1 TB</source>
+        <translation>%1 TB</translation>
+    </message>
+    <message id="logger-sharepage-bt-share">
+        <source>Share</source>
+        <translation>分享</translation>
+    </message>
     <message id="logger-sharepage-default-subject">
         <source>Log</source>
         <extracomment>Default email subject</extracomment>
@@ -128,11 +152,6 @@
     <message id="logger-sharepage-please-wait">
         <source>Please wait</source>
         <translation>等稍等</translation>
-    </message>
-    <message id="logger-sharepage-broken">
-        <source>In-app sharing is not available in this version of Sailfish OS. Use the pulley menu to save tarball to the documents folder.</source>
-        <extracomment>Info label displayed instead of sharing method list</extracomment>
-        <translation type="unfinished">此版本的 Sailfish OS 无法进行应用内共享。 使用滑轮菜单将 tarball 保存到文档文件夹。</translation>
     </message>
     <message id="openrepos-logger-ofono-app_name">
         <source>Ofono Log</source>

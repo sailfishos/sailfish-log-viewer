@@ -43,6 +43,7 @@
 #include "LoggerBuffer.h"
 
 #include <QtCore/QObject>
+#include <QtCore/QUrl>
 
 class LoggerLogSaver :
     public QObject
@@ -50,19 +51,23 @@ class LoggerLogSaver :
     Q_OBJECT
     Q_PROPERTY(bool packing READ isPacking NOTIFY packingChanged)
     Q_PROPERTY(bool saving READ isSaving NOTIFY savingChanged)
-    Q_PROPERTY(QString archivePath READ archivePath NOTIFY archivePathChanged)
-    Q_PROPERTY(QString archiveFile READ archiveFile CONSTANT)
     Q_PROPERTY(QString archiveType READ archiveType CONSTANT)
+    Q_PROPERTY(QString archiveFile READ archiveFile CONSTANT)
+    Q_PROPERTY(QString archivePath READ archivePath NOTIFY archivePathChanged)
+    Q_PROPERTY(qint64 archiveSize READ archiveSize NOTIFY archiveSizeChanged)
+    Q_PROPERTY(QUrl archiveUrl READ archiveUrl NOTIFY archivePathChanged)
 
 public:
     LoggerLogSaver(QString, QString, QObject* aParent = NULL);
 
     bool isPacking() const;
     bool isSaving() const;
+    QString dirName() const;
     QString archivePath() const;
     QString archiveFile() const;
     QString archiveType() const;
-    QString dirName() const;
+    qint64 archiveSize() const;
+    QUrl archiveUrl() const;
 
 public Q_SLOTS:
     void pack();
@@ -75,6 +80,7 @@ Q_SIGNALS:
     void packingChanged();
     void savingChanged();
     void archivePathChanged();
+    void archiveSizeChanged();
 
 private:
     class WriteTask;
