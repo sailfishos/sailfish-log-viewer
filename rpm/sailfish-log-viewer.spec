@@ -1,6 +1,6 @@
 Name:       sailfish-log-viewer
 Summary:    Log viewer tools
-Version:    1.0.22
+Version:    1.1.0
 Release:    1
 License:    BSD
 URL:        https://github.com/sailfishos/sailfish-log-viewer

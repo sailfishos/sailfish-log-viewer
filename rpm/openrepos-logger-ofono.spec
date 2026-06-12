@@ -1,6 +1,6 @@
 Name:       openrepos-logger-ofono
 Summary:    Ofono logger
-Version:    1.0.22
+Version:    1.1.0
 Release:    1
 Group:      Applications/System
 License:    BSD

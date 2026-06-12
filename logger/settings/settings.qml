@@ -43,7 +43,7 @@ Page {
                 description: applicationName ?
                     //: Settings page header description (app version)
                     //% "Version %1"
-                    qsTrId("logger-settings-page-header-version").arg("1.0.22") :
+                    qsTrId("logger-settings-page-header-version").arg("1.1.0") :
                     ""
 
                 Image {
