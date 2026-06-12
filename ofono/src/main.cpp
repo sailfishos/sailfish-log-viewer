@@ -53,13 +53,6 @@
 #define MODEM_MANAGER_INTERFACE OFONOEXT_INTERFACE ".ModemManager"
 #define CELLULAR_TECHNOLOGY_PATH "/net/connman/technology/cellular"
 
-#ifdef APP_TRANSLATIONS_PATH
-#  define APP_TRANS_DIR QT_STRINGIFY(APP_TRANSLATIONS_PATH)
-#  pragma message("Translations dir: " APP_TRANS_DIR)
-#else
-#  define APP_TRANS_DIR SailfishApp::pathTo("translations").toLocalFile()
-#endif
-
 #ifdef APP_PREFIX
 #  define APP_NAME_PREFIX QT_STRINGIFY(APP_PREFIX)
 #  pragma message("App prefix: " APP_NAME_PREFIX)
@@ -90,6 +83,11 @@ private:
     void dumpConnmanInfo(QString, QString) const;
 
 protected:
+#ifdef APP_TRANSLATIONS_PATH
+#  define APP_TRANS_DIR QT_STRINGIFY(APP_TRANSLATIONS_PATH)
+#  pragma message("Translations dir: " APP_TRANS_DIR)
+    QString translationPath() Q_DECL_OVERRIDE;
+#endif
     void saveFilesAtStartup(QString) Q_DECL_OVERRIDE;
     void setupView(QQuickView*) Q_DECL_OVERRIDE;
 
@@ -116,8 +114,8 @@ private:
 const QString OfonoLogger::AUTO("auto");
 
 OfonoLogger::OfonoLogger(int* aArgc, char** aArgv, QStringList aPackages) :
-    LoggerMain(aArgc, aArgv, "org.ofono", aPackages, APP_NAME_PREFIX, "ofono",
-    "qml/main.qml", APP_TRANS_DIR),
+    LoggerMain(aArgc, aArgv, "org.ofono", aPackages, APP_NAME_PREFIX,
+    "ofono", "qml/main.qml"),
     iModemManager(QOfonoExtModemManager::instance()),
     iNetworkTechnology(new NetworkTechnology(this)),
     iNetworkTechnologyReady(false),
@@ -278,6 +276,14 @@ OfonoLogger::dumpConnmanInfo(
         "--dest=net.connman",  qPrintable(aPath), qPrintable(call), outFile);
 }
 
+#ifdef APP_TRANSLATIONS_PATH
+QString
+OfonoLogger::translationPath()
+{
+    return APP_TRANS_DIR;
+}
+#endif
+
 void
 OfonoLogger::saveFilesAtStartup(
     QString aDir)
@@ -305,6 +311,7 @@ OfonoLogger::setupView(
 Q_DECL_EXPORT int main(int argc, char* argv[])
 {
     QStringList packages;
+
     packages.append("libgbinder");
     packages.append("libgbinder-radio");
     packages.append("libglibutil");

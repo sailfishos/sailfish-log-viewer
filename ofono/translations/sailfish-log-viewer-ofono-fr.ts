@@ -111,6 +111,30 @@
         <source>Pack and send</source>
         <translation>Compresser et envoyer</translation>
     </message>
+    <message id="logger-sharepage-la-file_size-bytes">
+        <source>%1 B</source>
+        <translation>%1 o</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-kilobytes">
+        <source>%1 kB</source>
+        <translation>%1 ko</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-megabytes">
+        <source>%1 MB</source>
+        <translation>%1 Mo</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-gigabytes">
+        <source>%1 GB</source>
+        <translation>%1 Go</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-terabytes">
+        <source>%1 TB</source>
+        <translation>%1 To</translation>
+    </message>
+    <message id="logger-sharepage-bt-share">
+        <source>Share</source>
+        <translation>Partager</translation>
+    </message>
     <message id="logger-sharepage-default-subject">
         <source>Log</source>
         <extracomment>Default email subject</extracomment>
@@ -128,11 +152,6 @@
     <message id="logger-sharepage-please-wait">
         <source>Please wait</source>
         <translation>Veuillez patienter</translation>
-    </message>
-    <message id="logger-sharepage-broken">
-        <source>In-app sharing is not available in this version of Sailfish OS. Use the pulley menu to save tarball to the documents folder.</source>
-        <extracomment>Info label displayed instead of sharing method list</extracomment>
-        <translation>Le partage via l&apos;application n&apos;est pas disponible dans cette version de Salifish OS. Uitlisez le menu déroulant pour sauvegarder le fichier &apos;tar&apos; dans le dossier &apos;documents&apos;.</translation>
     </message>
     <message id="openrepos-logger-ofono-app_name">
         <source>Ofono Log</source>

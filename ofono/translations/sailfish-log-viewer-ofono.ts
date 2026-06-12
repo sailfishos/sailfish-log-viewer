@@ -113,6 +113,30 @@ Whatever the reason is, logs will be unavailable. Sorry for the inconvenience!
         <source>Pack and send</source>
         <translation>Pack and send</translation>
     </message>
+    <message id="logger-sharepage-la-file_size-bytes">
+        <source>%1 B</source>
+        <translation>%1 B</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-kilobytes">
+        <source>%1 kB</source>
+        <translation>%1 kB</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-megabytes">
+        <source>%1 MB</source>
+        <translation type="unfinished">%1 MB</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-gigabytes">
+        <source>%1 GB</source>
+        <translation>%1 GB</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-terabytes">
+        <source>%1 TB</source>
+        <translation>%1 TB</translation>
+    </message>
+    <message id="logger-sharepage-bt-share">
+        <source>Share</source>
+        <translation>Share</translation>
+    </message>
     <message id="logger-sharepage-default-subject">
         <source>Log</source>
         <extracomment>Default email subject</extracomment>
@@ -130,11 +154,6 @@ Whatever the reason is, logs will be unavailable. Sorry for the inconvenience!
     <message id="logger-sharepage-please-wait">
         <source>Please wait</source>
         <translation>Please wait</translation>
-    </message>
-    <message id="logger-sharepage-broken">
-        <source>In-app sharing is not available in this version of Sailfish OS. Use the pulley menu to save tarball to the documents folder.</source>
-        <extracomment>Info label displayed instead of sharing method list</extracomment>
-        <translation>In-app sharing is not available in this version of Sailfish OS. Use the pulley menu to save tarball to the documents folder.</translation>
     </message>
     <message id="openrepos-logger-ofono-app_name">
         <source>Ofono Log</source>

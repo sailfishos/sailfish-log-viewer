@@ -103,6 +103,30 @@
         <source>Pack and send</source>
         <translation>Упаковка и отправка</translation>
     </message>
+    <message id="logger-sharepage-la-file_size-bytes">
+        <source>%1 B</source>
+        <translation>%1 Б</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-kilobytes">
+        <source>%1 kB</source>
+        <translation>%1 КБ</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-megabytes">
+        <source>%1 MB</source>
+        <translation>%1 МБ</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-gigabytes">
+        <source>%1 GB</source>
+        <translation>%1 ГБ</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-terabytes">
+        <source>%1 TB</source>
+        <translation>%1 ТБ</translation>
+    </message>
+    <message id="logger-sharepage-bt-share">
+        <source>Share</source>
+        <translation>Поделиться</translation>
+    </message>
     <message id="logger-sharepage-default-subject">
         <source>Log</source>
         <extracomment>Default email subject</extracomment>
@@ -120,11 +144,6 @@
     <message id="logger-sharepage-please-wait">
         <source>Please wait</source>
         <translation>Секундочку</translation>
-    </message>
-    <message id="logger-sharepage-broken">
-        <source>In-app sharing is not available in this version of Sailfish OS. Use the pulley menu to save tarball to the documents folder.</source>
-        <extracomment>Info label displayed instead of sharing method list</extracomment>
-        <translation>Увы, но в этой версии Sailfish OS ничего так просто расшарить не получится. Вы можете сохранить тарбол в документы, а дальше разбирайтесь сами, что с ним делать.</translation>
     </message>
     <message id="openrepos-logger-nfc-app_name">
         <source>NFC Logger</source>

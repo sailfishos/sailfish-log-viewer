@@ -103,6 +103,30 @@ W każdym razie aplikacja najprawdopodobniej nie będzie działać w tej formie 
         <source>Pack and send</source>
         <translation>Spakuj i wyślij</translation>
     </message>
+    <message id="logger-sharepage-la-file_size-bytes">
+        <source>%1 B</source>
+        <translation>%1 B</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-kilobytes">
+        <source>%1 kB</source>
+        <translation>%1 kB</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-megabytes">
+        <source>%1 MB</source>
+        <translation>%1 MB</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-gigabytes">
+        <source>%1 GB</source>
+        <translation>%1 GB</translation>
+    </message>
+    <message id="logger-sharepage-la-file_size-terabytes">
+        <source>%1 TB</source>
+        <translation>%1 TB</translation>
+    </message>
+    <message id="logger-sharepage-bt-share">
+        <source>Share</source>
+        <translation>Udostępnij</translation>
+    </message>
     <message id="logger-sharepage-default-subject">
         <source>Log</source>
         <extracomment>Default email subject</extracomment>
@@ -120,11 +144,6 @@ W każdym razie aplikacja najprawdopodobniej nie będzie działać w tej formie 
     <message id="logger-sharepage-please-wait">
         <source>Please wait</source>
         <translation>Proszę czekać</translation>
-    </message>
-    <message id="logger-sharepage-broken">
-        <source>In-app sharing is not available in this version of Sailfish OS. Use the pulley menu to save tarball to the documents folder.</source>
-        <extracomment>Info label displayed instead of sharing method list</extracomment>
-        <translation>Udostęnianie nie jest dostępne w tej wersji Sailfish OS. Użyj pulley menu, aby zapisać plik tar w dokumentach.</translation>
     </message>
     <message id="openrepos-logger-nfc-app_name">
         <source>NFC Logger</source>

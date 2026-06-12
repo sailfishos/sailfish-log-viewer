@@ -26,44 +26,61 @@ BuildRequires: pkgconfig(rpm)
 %define license_support %(pkg-config --exists 'rpm >= 4.11'; echo $?)
 
 %description
-Application for gathering ofono logs on Sailfish OS
-
-%package ofono
-Summary:    Ofono logger
-
-%description ofono
 %{summary}.
 
-%{!?qtc_qmake5:%define qtc_qmake5 %qmake5}
-%{!?qtc_make:%define qtc_make make}
+%package nfc
+Summary: NFC logger
+
+%description nfc
+Application for gathering nfcd logs.
+
+%package ofono
+Summary: Ofono logger
+
+%description ofono
+Application for gathering ofono logs.
 
 %prep
 %setup -q -n %{name}-%{version}
 
 %build
-%qtc_qmake5 CONFIG+=ofono CONFIG+=sailfish-log-viewer CONFIG+=app_settings
-%qtc_make %{?_smp_mflags} logger-ofono
+%qmake5 CONFIG+=nfc CONFIG+=ofono CONFIG+=sailfish-log-viewer CONFIG+=app_settings
+%make_build logger-nfc logger-ofono
 
 %install
-rm -rf %{buildroot}
+%qmake5_install -C nfc
 %qmake5_install -C ofono
 
 desktop-file-install --delete-original \
   --dir %{buildroot}%{_datadir}/applications \
    %{buildroot}%{_datadir}/applications/*.desktop
 
+%files nfc
+%global privileges_dir %{_datarootdir}/mapplauncherd/privileges.d
+%dir %{privileges_dir}
+%{privileges_dir}/%{name}-nfc
+%{_datadir}/jolla-settings/entries/%{name}-nfc.json
+%{_datadir}/translations/%{name}-nfc*.qm
+%{_datadir}/applications/%{name}-nfc.desktop
+%{_datadir}/%{name}-nfc/qml
+%{_datadir}/%{name}-nfc/settings
+%{_bindir}/%{name}-nfc
+%{_datadir}/icons/hicolor/*/apps/%{name}-nfc.png
+%if %{license_support} == 0
+%license LICENSE
+%endif
+
 %files ofono
 %global privileges_dir %{_datarootdir}/mapplauncherd/privileges.d
 %dir %{privileges_dir}
-%defattr(-,root,root,-)
-%{_datadir}/jolla-settings/entries/sailfish-log-viewer-ofono.json
-%{_datadir}/translations/sailfish-log-viewer-ofono*.qm
-%{_datadir}/applications/sailfish-log-viewer-ofono.desktop
-%{_datadir}/sailfish-log-viewer-ofono/qml
-%{_datadir}/sailfish-log-viewer-ofono/settings
-%{_bindir}/sailfish-log-viewer-ofono
-%{_datadir}/icons/hicolor/*/apps/sailfish-log-viewer-ofono.png
-%{privileges_dir}/sailfish-log-viewer-ofono
+%{privileges_dir}/%{name}-ofono
+%{_datadir}/jolla-settings/entries/%{name}-ofono.json
+%{_datadir}/translations/%{name}-ofono*.qm
+%{_datadir}/applications/%{name}-ofono.desktop
+%{_datadir}/%{name}-ofono/qml
+%{_datadir}/%{name}-ofono/settings
+%{_bindir}/%{name}-ofono
+%{_datadir}/icons/hicolor/*/apps/%{name}-ofono.png
 %if %{license_support} == 0
 %license LICENSE
 %endif

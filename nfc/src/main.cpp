@@ -43,13 +43,6 @@
 
 #include <QtQuick/QQuickView>
 
-#ifdef APP_TRANSLATIONS_PATH
-#  define APP_TRANS_DIR QT_STRINGIFY(APP_TRANSLATIONS_PATH)
-#  pragma message("Translations dir: " APP_TRANS_DIR)
-#else
-#  define APP_TRANS_DIR SailfishApp::pathTo("translations").toLocalFile()
-#endif
-
 #ifdef APP_PREFIX
 #  define APP_NAME_PREFIX QT_STRINGIFY(APP_PREFIX)
 #  pragma message("App prefix: " APP_NAME_PREFIX)
@@ -66,14 +59,26 @@ public:
     NfcLogger(int*, char**, QStringList);
 
 protected:
+#ifdef APP_TRANSLATIONS_PATH
+#  define APP_TRANS_DIR QT_STRINGIFY(APP_TRANSLATIONS_PATH)
+#  pragma message("Translations dir: " APP_TRANS_DIR)
+    QString translationPath() Q_DECL_OVERRIDE;
+#endif
     void setupView(QQuickView*) Q_DECL_OVERRIDE;
 };
 
 NfcLogger::NfcLogger(int* aArgc, char** aArgv, QStringList aPackages) :
     LoggerMain(aArgc, aArgv, "org.sailfishos.nfc.daemon", aPackages,
-    APP_NAME_PREFIX, "nfc", "qml/main.qml", APP_TRANS_DIR)
+    APP_NAME_PREFIX, "nfc", "qml/main.qml")
+{}
+
+#ifdef APP_TRANSLATIONS_PATH
+QString
+NfcLogger::translationPath()
 {
+    return APP_TRANS_DIR;
 }
+#endif
 
 void
 NfcLogger::setupView(
@@ -88,6 +93,7 @@ NfcLogger::setupView(
 Q_DECL_EXPORT int main(int argc, char* argv[])
 {
     QStringList packages;
+
     packages.append("libgbinder");
     packages.append("libncicore");
     packages.append("libnciplugin");
